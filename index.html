@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>UPI Payment QR Code Generator</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="container">
+    <h1>Generate UPI QR Code</h1>
+
+    <!-- Form to take user input -->
+    <label for="name">Your Name:</label>
+    <input type="text" id="name" placeholder="Enter your name" />
+
+    <label for="upiId">UPI ID:</label>
+    <input type="text" id="upiId" placeholder="Enter UPI ID" />
+
+    <label for="amount">Amount (INR):</label>
+    <input type="number" id="amount" placeholder="Enter amount" />
+
+    <label for="paymentType">Choose Payment Type:</label>
+    <select id="paymentType">
+      <option value="paytm">Paytm</option>
+      <option value="googlepay">Google Pay</option>
+    </select>
+
+    <button onclick="generateQRCode()">Generate QR Code</button>
+
+    <div id="qrCodeContainer">
+      <h3>Generated QR Code:</h3>
+      <img id="qrCodeImage" src="" alt="QR Code" />
+    </div>
+  </div>
+
+  <script>
+    function generateQRCode() {
+      const name = document.getElementById('name').value;
+      const upiId = document.getElementById('upiId').value;
+      const amount = document.getElementById('amount').value;
+      const paymentType = document.getElementById('paymentType').value;
+
+      // Validate the input fields
+      if (!name || !upiId || !amount) {
+        alert('Please fill in all the fields');
+        return;
+      }
+
+      // Send data to the backend to generate the QR code
+      fetch('/generate-qr', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ name, upiId, amount, paymentType })
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.qrCodeUrl) {
+          // Display the QR code image
+          document.getElementById('qrCodeImage').src = data.qrCodeUrl;
+        } else {
+          alert('Error generating QR code');
+        }
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        alert('Error generating QR code');
+      });
+    }
+  </script>
+</body>
+</html>
